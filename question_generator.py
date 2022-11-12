@@ -1,4 +1,5 @@
 import random
+from enum import Enum
 
 from musthe import Note, Scale
 
@@ -19,7 +20,7 @@ def random_scale_and_degree_example(scale_level: int, note_level: int):
     scale_type = random.choice(available_scale_types[0:scale_level])
     scale = Scale(note, scale_type)
     degree = random.randint(1, len(scale.notes))
-    return scale, degree, scale.notes[degree - 1]
+    return QuestionScheme.SCALE_DEGREE_EQUALS_NOTE, scale, degree, scale.notes[degree - 1]
 
 
 class QuestionGenerator:
@@ -36,12 +37,17 @@ class QuestionGenerator:
         return self.question
 
     def next(self):
-        scale, degree, answer = random_scale_and_degree_example(self.scale_level, self.note_level)
-        self.question = Question((scale, degree), answer)
+        scheme, scale, degree, answer = random_scale_and_degree_example(self.scale_level, self.note_level)
+        self.question = Question(scheme, (scale, degree), answer)
 
 
 class Question:
 
-    def __init__(self, question, answer):
+    def __init__(self, scheme, question, answer):
+        self.scheme = scheme
         self.question = question
         self.answer = answer
+
+
+class QuestionScheme(Enum):
+    SCALE_DEGREE_EQUALS_NOTE = 1

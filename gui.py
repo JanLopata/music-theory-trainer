@@ -2,10 +2,15 @@ import curses
 from curses import wrapper
 from enum import Enum
 
+import question_formatter
 from question_generator import QuestionGenerator
 
 generator = None
 gui_phase = None
+
+
+def half_length(answer):
+    return int(len(answer) / 2)
 
 
 class Gui:
@@ -17,32 +22,40 @@ class Gui:
     def run(self):
         wrapper(self.main)
 
-    def main(self, stdscr):
+    def main(self, screen):
 
-        stdscr.addstr(15, 20, str(self.generator.current_question().question))
+        self.show_question(screen)
 
         key = ''
         while key != ord('q'):
-            key = stdscr.getch()
+            key = screen.getch()
             # if key is space or return, then provide result and read result
 
             if self.gui_phase == GuiPhase.PROVIDE_QUESTION:
                 if key == curses.KEY_ENTER or key == ord(' '):
                     # provide answer
                     self.gui_phase = GuiPhase.PROVIDE_ANSWER
-                    stdscr.addstr(15, 20, str(self.generator.current_question().answer))
+                    screen.clear()
+                    self.show_question(screen)
+                    self.show_answer(screen)
                     continue
 
             if self.gui_phase == GuiPhase.PROVIDE_ANSWER:
                 if key == curses.KEY_ENTER or key == ord(' '):
                     # provide question
                     self.gui_phase = GuiPhase.PROVIDE_QUESTION
+                    screen.clear()
                     self.generator.next()
-                    stdscr.clear()
-                    stdscr.addstr(14, 20, str(self.generator.current_question().question))
+                    self.show_question(screen)
                     continue
 
-            stdscr.addstr(0, 0, f'You pressed {key}. State is {self.gui_phase}  ')
+    def show_answer(self, screen):
+        answer = question_formatter.format_answer(self.generator.current_question(), 'cz')
+        screen.addstr(5, 10 - half_length(answer), answer)
+
+    def show_question(self, screen):
+        question = question_formatter.format_question(self.generator.current_question(), 'cz')
+        screen.addstr(4, 10 - half_length(question), question)
 
 
 class GuiPhase(Enum):
