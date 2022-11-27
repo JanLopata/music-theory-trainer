@@ -17,7 +17,8 @@ def format_question(question: Question, language: str):
 
     if question.scheme == QuestionScheme.SCALE_DEGREE_EQUALS_NOTE:
         scale, degree = question.question
-        return f'{scale.root} {scale.name} {degree}.'
+        root = format_note(str(scale.root), 'cz')
+        return f'{root} {scale.name} {degree}.'
 
     return 'Not implemented yet.'
 
