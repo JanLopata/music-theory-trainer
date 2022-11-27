@@ -19,7 +19,7 @@ def random_scale_and_degree_example(scale_level: int, note_level: int):
     note = random.choice(notes_on_level)
     scale_type = random.choice(available_scale_types[0:scale_level])
     scale = Scale(note, scale_type)
-    degree = random.randint(1, len(scale.notes))
+    degree = random.randint(2, len(scale.notes))
     return QuestionScheme.SCALE_DEGREE_EQUALS_NOTE, scale, degree, scale.notes[degree - 1]
 
 
