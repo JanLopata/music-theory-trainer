@@ -1,3 +1,4 @@
+import curses
 from curses import wrapper
 from enum import Enum
 
@@ -6,6 +7,7 @@ from question_generator import QuestionGenerator
 
 generator = None
 gui_phase = None
+TOP = 2
 
 
 def half_length(answer):
@@ -26,6 +28,8 @@ class Gui:
 
     def main(self, screen):
 
+        curses.curs_set(0)
+
         key = ord(' ')
         while key != ord('q'):
             screen.timeout(int(1000 * 60 / self.tempo / self.beats))
@@ -45,14 +49,14 @@ class Gui:
 
     def show_answer(self, screen):
         answer = question_formatter.format_answer(self.generator.current_question(), 'cz')
-        screen.addstr(6, 10 - half_length(answer), answer)
+        screen.addstr(TOP + 2, 10 - half_length(answer), answer)
 
     def show_question(self, screen):
         question = question_formatter.format_question(self.generator.current_question(), 'cz')
-        screen.addstr(4, 11 - half_length(question), question)
+        screen.addstr(TOP, 11 - half_length(question), question)
 
     def show_stars(self, screen):
-        screen.addstr(5, 9, "*" * self.stars)
+        screen.addstr(TOP + 1, 9, "*" * self.stars)
 
     def next_gui_phase(self):
 
