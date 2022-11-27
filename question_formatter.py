@@ -1,5 +1,9 @@
 from question_generator import Question, QuestionScheme
 
+note_dict = {
+    "cz": {'B': 'H'}
+}
+
 
 def format_question(question: Question, language: str):
     """Format a question for display.
@@ -29,6 +33,15 @@ def format_answer(question: Question, language: str):
     """
 
     if question.scheme == QuestionScheme.SCALE_DEGREE_EQUALS_NOTE:
-        return str(question.answer)
+        return format_note(str(question.answer), language)
 
     return 'Not implemented yet.'
+
+
+def format_note(note: str, language: str):
+    if language in note_dict:
+        lan_dict = note_dict[language]
+        if note in lan_dict:
+            return lan_dict[note]
+
+    return note
