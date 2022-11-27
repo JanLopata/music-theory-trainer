@@ -1,4 +1,3 @@
-import curses
 from curses import wrapper
 from enum import Enum
 
@@ -18,46 +17,55 @@ class Gui:
     def __init__(self, question_generator: QuestionGenerator):
         self.generator = question_generator
         self.gui_phase = GuiPhase.PROVIDE_QUESTION
-        self.tempo = 45
+        self.tempo = 30
+        self.beats = 4
+        self.stars = -1
 
     def run(self):
         wrapper(self.main)
 
     def main(self, screen):
 
-        self.show_question(screen)
-
         key = ord(' ')
         while key != ord('q'):
-            screen.timeout(int(1000 * 60 / self.tempo))
+            screen.timeout(int(1000 * 60 / self.tempo / self.beats))
             key = screen.getch()
-            # if key is space or return, then provide result and read result
 
-            if self.gui_phase == GuiPhase.PROVIDE_QUESTION:
-                if True or key == curses.KEY_ENTER or key == ord(' '):
-                    # provide answer
-                    self.gui_phase = GuiPhase.PROVIDE_ANSWER
-                    screen.clear()
-                    self.show_question(screen)
-                    self.show_answer(screen)
-                    continue
+            self.stars += 1
 
+            if self.stars > self.beats:
+                self.stars = 1
+                self.next_gui_phase()
+
+            screen.clear()
+            self.show_question(screen)
+            self.show_stars(screen)
             if self.gui_phase == GuiPhase.PROVIDE_ANSWER:
-                if True or key == curses.KEY_ENTER or key == ord(' '):
-                    # provide question
-                    self.gui_phase = GuiPhase.PROVIDE_QUESTION
-                    screen.clear()
-                    self.generator.next()
-                    self.show_question(screen)
-                    continue
+                self.show_answer(screen)
 
     def show_answer(self, screen):
         answer = question_formatter.format_answer(self.generator.current_question(), 'cz')
-        screen.addstr(5, 10 - half_length(answer), answer)
+        screen.addstr(6, 10 - half_length(answer), answer)
 
     def show_question(self, screen):
         question = question_formatter.format_question(self.generator.current_question(), 'cz')
-        screen.addstr(4, 10 - half_length(question), question)
+        screen.addstr(4, 11 - half_length(question), question)
+
+    def show_stars(self, screen):
+        screen.addstr(5, 9, "*" * self.stars)
+
+    def next_gui_phase(self):
+
+        if self.gui_phase == GuiPhase.PROVIDE_QUESTION:
+            # provide answer
+            self.gui_phase = GuiPhase.PROVIDE_ANSWER
+            return
+
+        if self.gui_phase == GuiPhase.PROVIDE_ANSWER:
+            # provide question
+            self.generator.next()
+            self.gui_phase = GuiPhase.PROVIDE_QUESTION
+            return
 
 
 class GuiPhase(Enum):
