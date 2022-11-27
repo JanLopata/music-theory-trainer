@@ -18,6 +18,7 @@ class Gui:
     def __init__(self, question_generator: QuestionGenerator):
         self.generator = question_generator
         self.gui_phase = GuiPhase.PROVIDE_QUESTION
+        self.tempo = 45
 
     def run(self):
         wrapper(self.main)
@@ -26,13 +27,14 @@ class Gui:
 
         self.show_question(screen)
 
-        key = ''
+        key = ord(' ')
         while key != ord('q'):
+            screen.timeout(int(1000 * 60 / self.tempo))
             key = screen.getch()
             # if key is space or return, then provide result and read result
 
             if self.gui_phase == GuiPhase.PROVIDE_QUESTION:
-                if key == curses.KEY_ENTER or key == ord(' '):
+                if True or key == curses.KEY_ENTER or key == ord(' '):
                     # provide answer
                     self.gui_phase = GuiPhase.PROVIDE_ANSWER
                     screen.clear()
@@ -41,7 +43,7 @@ class Gui:
                     continue
 
             if self.gui_phase == GuiPhase.PROVIDE_ANSWER:
-                if key == curses.KEY_ENTER or key == ord(' '):
+                if True or key == curses.KEY_ENTER or key == ord(' '):
                     # provide question
                     self.gui_phase = GuiPhase.PROVIDE_QUESTION
                     screen.clear()
