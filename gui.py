@@ -9,7 +9,7 @@ gui_phase = None
 
 
 def half_length(answer):
-    return int(len(answer) / 2)
+    return int((len(answer) - 1) / 2)
 
 
 class Gui:
