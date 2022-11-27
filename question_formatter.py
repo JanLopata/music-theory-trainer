@@ -39,9 +39,10 @@ def format_answer(question: Question, language: str):
 
 
 def format_note(note: str, language: str):
+    result = note
     if language in note_dict:
         lan_dict = note_dict[language]
         if note in lan_dict:
-            return lan_dict[note]
+            result = lan_dict[note]
 
-    return note
+    return result.replace("b", '♭').replace("#", '♯')
